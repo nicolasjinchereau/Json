@@ -10,13 +10,12 @@
 #include <cfloat>
 #include <memory>
 #include <fstream>
-#include <codecvt>
 #include <cassert>
 #include <vector>
 #include <variant>
 #include <stdexcept>
 #include <iostream>
-
+#include <utf8.h>
 using namespace std::string_literals;
 
 enum class JsonTokenType
@@ -216,15 +215,8 @@ public:
         auto buffer = std::unique_ptr<char[]>(new char[sz]);
         fin.read(buffer.get(), sz);
 
-        std::locale loc(std::locale(), new std::codecvt_utf8<char32_t>);
-        std::basic_ifstream<char32_t> fin2(filename);
-        fin2.imbue(loc);
-        
-        fin2.seekg(0, std::ios::end);
+        utf8::utf8to32(buffer.get(), buffer.get() + sz, std::back_inserter(chars));
 
-        std::wstring_convert<std::codecvt_utf8<int>, int> cvt;
-        chars = cvt.from_bytes(buffer.get(), buffer.get() + sz);
-        
         line = 0;
         column = 0;
         offset = 0;
@@ -359,11 +351,9 @@ private:
             {
                 SkipChar();
 
-                std::wstring_convert<std::codecvt_utf8<int>, int> cvt;
-                const int* p = (const int*)str.data();
-                auto u8str = cvt.to_bytes(p, p + str.length());
-
-                return JsonToken(JsonTokenType::String, start, u8str);
+                std::string utf8str;
+                utf8::utf32to8(str.begin(), str.end(), std::back_inserter(utf8str));
+                return JsonToken(JsonTokenType::String, start, utf8str);
             }
             else if (value == '\\')
             {

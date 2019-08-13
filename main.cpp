@@ -5,8 +5,6 @@
 #include "JsonPrinter.h"
 using namespace std;
 
-// Note: Compile as C++14 to avoid deprecation errors about codecvt in JsonLexer
-
 int main(int argc, char** argv)
 {
     // read JSON from file into a JSONValue
