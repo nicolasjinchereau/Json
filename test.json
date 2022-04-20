@@ -1,9 +1,9 @@
 {
     "firstName": "John",
     "lastName": "Smith",
-    "isAlive": true,
+    "isQualified": true,
     "age": 2447e5,
-    "iq": -34658.5173e-2,
+    "iq": 34658.5173e-2,
     "address": {
         "streetAddress": "21 2nd Street",
         "city": "New York",
@@ -13,14 +13,33 @@
     "phoneNumbers": [
         {
             "type": "home",
-            "number": "212 555-1234"
+            "number": "212-555-1234"
         },
         {
-            "type": "office",
-            "number": "646 555-4567"
+            "type": "work",
+            "number": "646-555-4567"
         }
+    ],
+    "favoriteNumbers": [
+        234265,
+        -55,
+        0,
+        2349.456153455454,
+        0.3453345
     ],
     "children": [],
     "spouse": null,
-    "stuff": {}
+    "uniform": {
+        "hat": "yellow",
+        "shirt": "blue",
+        "apron": "red",
+        "pants": "blue"
+    },
+    "": [
+        "empty",
+        "a\\b",
+        {
+            " ": "c\"d"
+        }
+    ]
 }

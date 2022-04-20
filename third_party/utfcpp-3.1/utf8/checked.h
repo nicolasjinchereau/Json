@@ -176,6 +176,12 @@ namespace utf8
         return utf8::peek_next(it, end);
     }
 
+    template <typename octet_iterator>
+    uint32_t peek_prior(octet_iterator it, octet_iterator start)
+    {
+        return prior(it, start);
+    }
+
     template <typename octet_iterator, typename distance_type>
     void advance (octet_iterator& it, distance_type n, octet_iterator end)
     {
@@ -263,59 +269,66 @@ namespace utf8
 
     // The iterator class
     template <typename octet_iterator>
-    class iterator : public std::iterator <std::bidirectional_iterator_tag, uint32_t> {
-      octet_iterator it;
-      octet_iterator range_start;
-      octet_iterator range_end;
-      public:
-      iterator () {}
-      explicit iterator (const octet_iterator& octet_it,
-                         const octet_iterator& rangestart,
-                         const octet_iterator& rangeend) :
-               it(octet_it), range_start(rangestart), range_end(rangeend)
-      {
-          if (it < range_start || it > range_end)
-              throw std::out_of_range("Invalid utf-8 iterator position");
-      }
-      // the default "big three" are OK
-      octet_iterator base () const { return it; }
-      uint32_t operator * () const
-      {
-          octet_iterator temp = it;
-          return utf8::next(temp, range_end);
-      }
-      bool operator == (const iterator& rhs) const
-      {
-          if (range_start != rhs.range_start || range_end != rhs.range_end)
-              throw std::logic_error("Comparing utf-8 iterators defined with different ranges");
-          return (it == rhs.it);
-      }
-      bool operator != (const iterator& rhs) const
-      {
-          return !(operator == (rhs));
-      }
-      iterator& operator ++ ()
-      {
-          utf8::next(it, range_end);
-          return *this;
-      }
-      iterator operator ++ (int)
-      {
-          iterator temp = *this;
-          utf8::next(it, range_end);
-          return temp;
-      }
-      iterator& operator -- ()
-      {
-          utf8::prior(it, range_start);
-          return *this;
-      }
-      iterator operator -- (int)
-      {
-          iterator temp = *this;
-          utf8::prior(it, range_start);
-          return temp;
-      }
+    class iterator
+    {
+        using iterator_category = std::bidirectional_iterator_tag;
+        using value_type = uint32_t;
+        using difference_type = ptrdiff_t;
+        using pointer = uint32_t*;
+        using reference = uint32_t&;
+
+        octet_iterator it;
+        octet_iterator range_start;
+        octet_iterator range_end;
+        public:
+        iterator () {}
+        explicit iterator (const octet_iterator& octet_it,
+                            const octet_iterator& rangestart,
+                            const octet_iterator& rangeend) :
+                it(octet_it), range_start(rangestart), range_end(rangeend)
+        {
+            if (it < range_start || it > range_end)
+                throw std::out_of_range("Invalid utf-8 iterator position");
+        }
+        // the default "big three" are OK
+        octet_iterator base () const { return it; }
+        uint32_t operator * () const
+        {
+            octet_iterator temp = it;
+            return utf8::next(temp, range_end);
+        }
+        bool operator == (const iterator& rhs) const
+        {
+            if (range_start != rhs.range_start || range_end != rhs.range_end)
+                throw std::logic_error("Comparing utf-8 iterators defined with different ranges");
+            return (it == rhs.it);
+        }
+        bool operator != (const iterator& rhs) const
+        {
+            return !(operator == (rhs));
+        }
+        iterator& operator ++ ()
+        {
+            utf8::next(it, range_end);
+            return *this;
+        }
+        iterator operator ++ (int)
+        {
+            iterator temp = *this;
+            utf8::next(it, range_end);
+            return temp;
+        }
+        iterator& operator -- ()
+        {
+            utf8::prior(it, range_start);
+            return *this;
+        }
+        iterator operator -- (int)
+        {
+            iterator temp = *this;
+            utf8::prior(it, range_start);
+            return temp;
+        }
     }; // class iterator
 
 } // namespace utf8
